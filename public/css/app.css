@@ -1,3 +1,18 @@
-html {
-    font-family: 'Roboto', sans-serif;
+
+main {
+    overflow-x: hidden;
+}
+
+.left-gutter {
+    min-height: 100vh;
+    max-height: 500vh;
+    display: inline-block;
+    width: 5%;
+    margin: 0;
+}
+
+main > div:nth-child(2){
+    width: 95%;
+    float: right;
+    margin-right: auto;
 }

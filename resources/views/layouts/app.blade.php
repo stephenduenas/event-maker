@@ -13,14 +13,33 @@
 </head>
 
 <body>
-    <div id="app">
-        <h1>Test</h1>
-        @yield('main')
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark unique-color">
+        <a class="navbar-brand" href="#">Event Maker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-5">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <div class="left-gutter unique-color">
+        </div>
+        <div>
+            @yield('main')
+        </div>
+    </main>
 
+    
     <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>
     <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>
     <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="node_modules/mdbootstrap/js/mdb.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
 </body>
 </html>
