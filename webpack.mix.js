@@ -14,6 +14,7 @@ const mix = require('laravel-mix');
 
 mix.copyDirectory('node_modules/mdbootstrap/js', 'public/node_modules/mdbootstrap/js');
 mix.js('resources/js/app.js', 'public/js');
+mix.js('resources/js/event-maker/index.js', 'public/js/event-maker');
 
 mix.copyDirectory('node_modules/mdbootstrap/css', 'public/node_modules/mdbootstrap/css');
 mix.copy('resources/css/app.css', 'public/css');

@@ -1,12 +1,12 @@
 
 main {
+    width: 100%;
     overflow-x: hidden;
 }
 
 .left-gutter {
-    min-height: 100vh;
-    max-height: 500vh;
     display: inline-block;
+    height: 100vh;
     width: 5%;
     margin: 0;
 }
