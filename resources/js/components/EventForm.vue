@@ -1,5 +1,5 @@
 <template>
-    <form id="contact-form" class="mb-5" name="contact-form" action="mail.php" method="POST">
+    <form id="contact-form" class="mb-5" name="contact-form" action="api/events/1" method="GET">
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
@@ -57,16 +57,26 @@
             </div>                    
         </div>
         <div class="form-row justify-content-center">
-                <button type="submit" class="btn btn-primary btn-md">Save</button>
+                <button type="submit" class="btn btn-primary btn-md" @click.prevent="submitForm()">Save</button>
         </div>
     </form>
 </template>
 <script>
+import { HelperMixin } from '../mixins/helper-mixin.js'
+
 export default {
     name: "app",
+    mixins: [HelperMixin],
     data() {
         return {
             message: 'Component Message!'
+        }
+    },
+    methods: {
+        async submitForm() {
+            alert('submit!');
+            let test = await this.apiRequest('POST', {}, 'events/1');
+            console.log(test);
         }
     }
 }
