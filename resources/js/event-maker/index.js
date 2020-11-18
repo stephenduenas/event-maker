@@ -19,7 +19,6 @@ var app = new Vue({
     created() {
         EventBus.$on('showAlertMessage', (sAlertType = 'success') => {
             const bIsSuccess = sAlertType === 'success';
-            console.log(bIsSuccess);
             this.show_success = bIsSuccess;
             this.show_fail = !bIsSuccess;
         });

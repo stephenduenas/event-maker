@@ -104,20 +104,27 @@ export default {
          * Save/Submit Form
          */
         async submitForm() {
-            const bIsValid = this.validateForm();
-            if (bIsValid) {
-                const oFormData = new FormData(this.$refs.eventForm);
-                const oResponse = await this.apiRequest('POST', 'events/1', oFormData);
-                console.log(oResponse.status);
-                if (oResponse.status === 201) {
-                    EventBus.$emit('showAlertMessage');
-                    EventBus.$emit('renderAllEventDates', oResponse.data);
-                    return;
+            if (this.validateForm() === true) {
+                const mData = await this.sendEventSettingsApi(new FormData(this.$refs.eventForm));
+                if (mData !== false) {
+                    EventBus.$emit('renderAllEventDates', mData);
                 }
-                EventBus.$emit('showAlertMessage', 'error');
             }
         },
-
+        /**
+         * Post Event Settings Api
+         * @param object FormData
+         * @return mixed
+         */
+        async sendEventSettingsApi(oFormData = {}) {
+            const oResponse = await this.apiRequest('POST', 'events/1', oFormData);
+                if (oResponse.status === 201) {
+                    EventBus.$emit('showAlertMessage');
+                    return oResponse.data;
+                }
+                EventBus.$emit('showAlertMessage', 'error');
+                return false;
+        },
         /**
          * Validate Form
          * @returns bool

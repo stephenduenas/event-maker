@@ -2040,44 +2040,75 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var bIsValid, oFormData, oResponse;
+        var mData;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                bIsValid = _this2.validateForm();
-
-                if (!bIsValid) {
-                  _context.next = 12;
+                if (!(_this2.validateForm() === true)) {
+                  _context.next = 5;
                   break;
                 }
 
-                oFormData = new FormData(_this2.$refs.eventForm);
-                _context.next = 5;
-                return _this2.apiRequest('POST', 'events/1', oFormData);
+                _context.next = 3;
+                return _this2.sendEventSettingsApi(new FormData(_this2.$refs.eventForm));
+
+              case 3:
+                mData = _context.sent;
+
+                if (mData !== false) {
+                  _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('renderAllEventDates', mData);
+                }
 
               case 5:
-                oResponse = _context.sent;
-                console.log(oResponse.status);
-
-                if (!(oResponse.status === 201)) {
-                  _context.next = 11;
-                  break;
-                }
-
-                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage');
-                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('renderAllEventDates', oResponse.data);
-                return _context.abrupt("return");
-
-              case 11:
-                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
-
-              case 12:
               case "end":
                 return _context.stop();
             }
           }
         }, _callee);
+      }))();
+    },
+
+    /**
+     * Post Event Settings Api
+     * @param object FormData
+     * @return mixed
+     */
+    sendEventSettingsApi: function sendEventSettingsApi() {
+      var _arguments = arguments,
+          _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var oFormData, oResponse;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                oFormData = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
+                _context2.next = 3;
+                return _this3.apiRequest('POST', 'events/1', oFormData);
+
+              case 3:
+                oResponse = _context2.sent;
+
+                if (!(oResponse.status === 201)) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage');
+                return _context2.abrupt("return", oResponse.data);
+
+              case 7:
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
+                return _context2.abrupt("return", false);
+
+              case 9:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
       }))();
     },
 
@@ -33340,7 +33371,6 @@ var app = new Vue({
     EventBus.$on('showAlertMessage', function () {
       var sAlertType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'success';
       var bIsSuccess = sAlertType === 'success';
-      console.log(bIsSuccess);
       _this.show_success = bIsSuccess;
       _this.show_fail = !bIsSuccess;
     });

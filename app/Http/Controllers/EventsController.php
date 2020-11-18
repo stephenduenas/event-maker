@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\EventsService;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\EventsRequest;
 
 /**
  * Class EventsController
@@ -40,7 +41,7 @@ class EventsController extends Controller
      * @param $sEventId string
      * @return json
      */
-    public function create(string $sEventId): \Illuminate\Http\JsonResponse
+    public function create(EventsRequest $oEventsRequest, string $sEventId): \Illuminate\Http\JsonResponse
     {
         $aResult = $this->oEventsService->create((int)$sEventId);
         return response()->json($aResult, Response::HTTP_CREATED);
