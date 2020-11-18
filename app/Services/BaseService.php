@@ -17,7 +17,7 @@ class BaseService
      * @param $sDesiredKey string
      * @return array
      */
-    public function wrapArrayValues(array $aData, string $sDesiredKey)
+    public function wrapArrayValues(array $aData, string $sDesiredKey): array
     {
         return collect($aData)->map(function ($mData) use ($sDesiredKey) {
             return [

@@ -4,6 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class EventsRequest
+ * @package App\Http\Requests
+ * @author Stephen Dueñas <semduenas@gmail.com>
+ * @since 11/19/2020 7:26 AM
+ */
 class EventsRequest extends FormRequest
 {
     /**

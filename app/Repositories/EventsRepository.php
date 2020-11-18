@@ -32,18 +32,19 @@ class EventsRepository
     /**
      * Main method for read/get
      * @param int $iEventId
-     * @return array
+     * @return null or array
      */
     public function read(int $iEventId)
     {
-        return $this->oModel->find($iEventId)->with('days')->get()->toArray();
+        $mResult = $this->oModel->find($iEventId);
+        return $mResult === null ? null : $mResult->with('days')->get()->toArray();
     }
 
     /**
      * Main method for create
      * @param array $aEventsData
      */
-    public function create(array $aEventsData)
+    public function create(array $aEventsData): array
     {
         $oModel = $this->updateOrCreateParent($aEventsData);
         $this->removeExcessDays($oModel, Arr::flatten($aEventsData['day']));
@@ -57,7 +58,7 @@ class EventsRepository
      * @param array $aEventsData
      * @return Event $oModel
      */
-    private function updateOrCreateParent(array $aEventsData)
+    private function updateOrCreateParent(array $aEventsData): Event
     {
         return $this->oModel->updateOrCreate(
             [
@@ -88,7 +89,7 @@ class EventsRepository
      * Remove Excess Days
      * @return int
      */
-    private function removeExcessDays(Event $oModel, array $aDays)
+    private function removeExcessDays(Event $oModel, array $aDays): int
     {
         return $oModel->days()->whereNotIn('day', $aDays)->delete();
     }

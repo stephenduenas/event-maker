@@ -1971,6 +1971,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2224,7 +2226,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             case 3:
               oEventSettings = _context.sent;
 
-              if (oEventSettings !== null) {
+              if (oEventSettings !== null && oEventSettings.length !== 0) {
                 _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderAllEventDates', oEventSettings);
                 oEventSettings.days = _this.event_day;
                 _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderEventSettings', oEventSettings);
@@ -20685,205 +20687,211 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "form",
-    {
-      ref: "eventForm",
-      staticClass: "mb-5",
-      attrs: {
-        id: "contact-form",
-        name: "contact-form",
-        action: "api/events/1",
-        method: "GET"
-      }
-    },
-    [
-      _c("div", { staticClass: "form-row" }, [
-        _c("div", { staticClass: "col-md-12" }, [
-          _c("div", { staticClass: "md-form" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.event_name,
-                  expression: "form.event_name"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                name: "event_name",
-                type: "text",
-                id: "event_name",
-                placeholder: "Event Name",
-                required: ""
-              },
-              domProps: { value: _vm.form.event_name },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+  return _c("div", { staticClass: "card p-3" }, [
+    _c(
+      "form",
+      {
+        ref: "eventForm",
+        staticClass: "mb-5",
+        attrs: {
+          id: "contact-form",
+          name: "contact-form",
+          action: "api/events/1",
+          method: "GET"
+        }
+      },
+      [
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-md-12" }, [
+            _c("div", { staticClass: "md-form" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.form.event_name,
+                    expression: "form.event_name"
                   }
-                  _vm.$set(_vm.form, "event_name", $event.target.value)
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  name: "event_name",
+                  type: "text",
+                  id: "event_name",
+                  placeholder: "Event Name",
+                  required: ""
+                },
+                domProps: { value: _vm.form.event_name },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.form, "event_name", $event.target.value)
+                  }
                 }
-              }
-            }),
-            _vm._v(" "),
-            _c("small", { staticClass: "text-muted float-right" }, [
-              _vm._v(
-                _vm._s(_vm.form.event_name.length) +
-                  "/" +
-                  _vm._s(_vm.counter.event_name)
-              )
+              }),
+              _vm._v(" "),
+              _c("small", { staticClass: "text-muted float-right" }, [
+                _vm._v(
+                  _vm._s(_vm.form.event_name.length) +
+                    "/" +
+                    _vm._s(_vm.counter.event_name)
+                )
+              ])
             ])
           ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-row" }, [
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c(
-            "div",
-            {
-              staticClass: "md-form md-outline input-with-post-icon datepicker"
-            },
-            [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.form.start_date,
-                    expression: "form.start_date"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  name: "start_date",
-                  placeholder: "Select date",
-                  type: "date",
-                  id: "start_date",
-                  required: ""
-                },
-                domProps: { value: _vm.form.start_date },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.form, "start_date", $event.target.value)
-                  }
-                }
-              }),
-              _vm._v(" "),
-              _c("label", { attrs: { for: "start_date" } }, [
-                _vm._v("Start Date")
-              ])
-            ]
-          )
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c(
-            "div",
-            {
-              staticClass: "md-form md-outline input-with-post-icon datepicker"
-            },
-            [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.form.end_date,
-                    expression: "form.end_date"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  name: "end_date",
-                  placeholder: "Select date",
-                  type: "date",
-                  id: "end_date",
-                  required: ""
-                },
-                domProps: { value: _vm.form.end_date },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(_vm.form, "end_date", $event.target.value)
-                  }
-                }
-              }),
-              _vm._v(" "),
-              _c("label", { attrs: { for: "end_date" } }, [_vm._v("End Date")])
-            ]
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-row" }, [
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c(
-            "div",
-            { staticClass: "my-3 m-lg-0" },
-            _vm._l(_vm.days, function(iDay) {
-              return _c(
-                "div",
-                {
-                  staticClass:
-                    "custom-control custom-checkbox custom-control-inline"
-                },
-                [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      name: "day[]",
-                      type: "checkbox",
-                      id: _vm.getStringDay(iDay - 1)
-                    },
-                    domProps: {
-                      checked: _vm.form.event_day.includes(iDay - 1),
-                      value: iDay - 1
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "md-form md-outline input-with-post-icon datepicker"
+              },
+              [
+                _c("input", {
+                  directives: [
                     {
-                      staticClass: "custom-control-label",
-                      attrs: { for: _vm.getStringDay(iDay - 1) }
-                    },
-                    [_vm._v(_vm._s(_vm.getStringDay(iDay - 1)))]
-                  )
-                ]
-              )
-            }),
-            0
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.start_date,
+                      expression: "form.start_date"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    name: "start_date",
+                    placeholder: "Select date",
+                    type: "date",
+                    id: "start_date",
+                    required: ""
+                  },
+                  domProps: { value: _vm.form.start_date },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "start_date", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "start_date" } }, [
+                  _vm._v("Start Date")
+                ])
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "md-form md-outline input-with-post-icon datepicker"
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.end_date,
+                      expression: "form.end_date"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    name: "end_date",
+                    placeholder: "Select date",
+                    type: "date",
+                    id: "end_date",
+                    required: ""
+                  },
+                  domProps: { value: _vm.form.end_date },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "end_date", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", { attrs: { for: "end_date" } }, [
+                  _vm._v("End Date")
+                ])
+              ]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c(
+              "div",
+              { staticClass: "my-3 m-lg-0" },
+              _vm._l(_vm.days, function(iDay) {
+                return _c(
+                  "div",
+                  {
+                    staticClass:
+                      "custom-control custom-checkbox custom-control-inline"
+                  },
+                  [
+                    _c("input", {
+                      staticClass: "custom-control-input",
+                      attrs: {
+                        name: "day[]",
+                        type: "checkbox",
+                        id: _vm.getStringDay(iDay - 1)
+                      },
+                      domProps: {
+                        checked: _vm.form.event_day.includes(iDay - 1),
+                        value: iDay - 1
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "label",
+                      {
+                        staticClass: "custom-control-label",
+                        attrs: { for: _vm.getStringDay(iDay - 1) }
+                      },
+                      [_vm._v(_vm._s(_vm.getStringDay(iDay - 1)))]
+                    )
+                  ]
+                )
+              }),
+              0
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row justify-content-center mt-lg-3" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary btn-md",
+              attrs: { type: "submit" },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.submitForm()
+                }
+              }
+            },
+            [_vm._v("Save")]
           )
         ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "form-row justify-content-center mt-lg-3" }, [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-primary btn-md",
-            attrs: { type: "submit" },
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                return _vm.submitForm()
-              }
-            }
-          },
-          [_vm._v("Save")]
-        )
-      ])
-    ]
-  )
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true

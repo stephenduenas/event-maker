@@ -43,7 +43,7 @@ class EventsService extends BaseService
      * @param int $iEventId
      * @return array
      */
-    public function read(int $iEventId)
+    public function read(int $iEventId): array
     {
         return $this->oEventsRepository->read($iEventId)[0] ?? [];
     }
@@ -53,7 +53,7 @@ class EventsService extends BaseService
      * @param int $iEventId
      * @return array
      */
-    public function create(int $iEventId)
+    public function create(int $iEventId): array
     {
         $aRequestParams = $this->oRequest->all();
         $aRequestParams['event_id'] = $iEventId;

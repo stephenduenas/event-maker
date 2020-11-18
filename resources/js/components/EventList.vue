@@ -57,7 +57,7 @@ export default {
             this.event_name = oEventSettings.event_name;
         });
         const oEventSettings = await this.getEventSettingsApi();
-        if (oEventSettings !== null) {
+        if (oEventSettings !== null && oEventSettings.length !== 0) {
             EventBus.$emit('renderAllEventDates', oEventSettings);
             oEventSettings.days = this.event_day;
             EventBus.$emit('renderEventSettings', oEventSettings);
