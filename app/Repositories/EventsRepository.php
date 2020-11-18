@@ -30,6 +30,16 @@ class EventsRepository
     }
     
     /**
+     * Main method for read/get
+     * @param int $iEventId
+     * @return array
+     */
+    public function read(int $iEventId)
+    {
+        return $this->oModel->find($iEventId)->with('days')->get()->toArray();
+    }
+
+    /**
      * Main method for create
      * @param array $aEventsData
      */

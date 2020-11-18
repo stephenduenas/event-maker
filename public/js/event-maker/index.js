@@ -1926,23 +1926,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_maker_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../event-maker/index */ "./resources/js/event-maker/index.js");
 
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-//
 //
 //
 //
@@ -1996,7 +1983,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       form: {
         event_name: '',
         start_date: '',
-        end_date: ''
+        end_date: '',
+        event_day: []
       },
       counter: {
         event_name: 100
@@ -2008,11 +1996,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     };
   },
   beforeMount: function beforeMount() {
+    var _this = this;
+
     /**
      * Add default date (today)
      */
-    this.form.start_date = new Date().toISOString().slice(0, 10);
-    this.form.end_date = new Date().toISOString().slice(0, 10);
+    this.form.start_date = this.formatDate();
+    this.form.end_date = this.formatDate();
+    _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$on('renderEventSettings', function (oEventSettings) {
+      _this.form.start_date = _this.formatDate(oEventSettings.start_date);
+      _this.form.end_date = _this.formatDate(oEventSettings.end_date);
+      _this.form.event_name = oEventSettings.event_name;
+      _this.form.event_day = oEventSettings.days;
+    });
   },
   watch: {
     'form.event_name': function formEvent_name(sNew, sOld) {
@@ -2023,36 +2019,60 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   methods: {
     /**
+     * Formate Date
+     * @param string sDate => default date_today
+     * @return string date
+     */
+    formatDate: function formatDate() {
+      var sDate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Date();
+
+      /**
+       * 'en-CA' to use yyyy-mm-dd format
+       */
+      var LOCALE = 'en-CA';
+      return new Date(sDate).toLocaleDateString('en-CA');
+    },
+
+    /**
      * Save/Submit Form
      */
     submitForm: function submitForm() {
-      var _this = this;
+      var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var bIsValid, oFormData, oResult;
+        var bIsValid, oFormData, oResponse;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                bIsValid = _this.validateForm();
+                bIsValid = _this2.validateForm();
 
                 if (!bIsValid) {
-                  _context.next = 9;
+                  _context.next = 12;
                   break;
                 }
 
-                oFormData = new FormData(_this.$refs.eventForm);
+                oFormData = new FormData(_this2.$refs.eventForm);
                 _context.next = 5;
-                return _this.apiRequest('POST', 'events/1', oFormData);
+                return _this2.apiRequest('POST', 'events/1', oFormData);
 
               case 5:
-                oResult = _context.sent;
-                console.log(oResult);
-                oResult.status === 200 ? _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage') : _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
+                oResponse = _context.sent;
+                console.log(oResponse.status);
 
-                _this.renderAllEventDates(oResult.data);
+                if (!(oResponse.status === 201)) {
+                  _context.next = 11;
+                  break;
+                }
 
-              case 9:
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage');
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('renderAllEventDates', oResponse.data);
+                return _context.abrupt("return");
+
+              case 11:
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
+
+              case 12:
               case "end":
                 return _context.stop();
             }
@@ -2060,6 +2080,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
+
+    /**
+     * Validate Form
+     * @returns bool
+     */
     validateForm: function validateForm() {
       if (this.form.event_name.length === 0) {
         alert(this.alert_message.empty_event_name);
@@ -2074,66 +2099,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return true;
-    },
-
-    /**
-     * Render all event dates
-     * @params object oEventSettings
-     */
-    renderAllEventDates: function renderAllEventDates(oEventSettings) {
-      var aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
-      var oFormattedEventDates = this.formatEventDates(aEventDates);
-      _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
-    },
-
-    /**
-     * Get all in between the dates
-     * @param string sStartDate
-     * @param string sEndDate
-     * @returns oDates
-     */
-    getAllInBetweenDates: function getAllInBetweenDates(sStartDate, sEndDate) {
-      var aDates = []; //to avoid modifying the original date
-
-      var oStartDate = new Date(sStartDate);
-      var oEndDate = new Date(sEndDate);
-
-      while (oStartDate <= oEndDate) {
-        aDates = [].concat(_toConsumableArray(aDates), [new Date(oStartDate)]);
-        oStartDate.setDate(oStartDate.getDate() + 1);
-      }
-
-      return aDates;
-    },
-
-    /**
-     * Format event date
-     * To be used for rendering of dates on EventList.vue
-     * @param array aEventDates
-     * @returns object oFormattedEventDates
-     */
-    formatEventDates: function formatEventDates(aEventDates) {
-      var oFormattedEventDates = {};
-      var iCurrentYear = null;
-      var iCurrentMonth = null;
-      aEventDates.forEach(function (oDate, iIndex) {
-        var iFullYear = oDate.getFullYear();
-        var iMonth = oDate.getMonth();
-
-        if (iFullYear > iCurrentYear || iCurrentYear === null) {
-          iCurrentYear = iFullYear;
-          oFormattedEventDates[iFullYear] = {};
-          iCurrentMonth = null;
-        }
-
-        if (iMonth > iCurrentMonth || iCurrentMonth === null) {
-          iCurrentMonth = iMonth;
-          oFormattedEventDates[iFullYear][iMonth] = [];
-        }
-
-        oFormattedEventDates[iFullYear][iMonth].push(oDate);
-      });
-      return oFormattedEventDates;
     }
   }
 });
@@ -2149,8 +2114,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _event_maker_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event-maker/index */ "./resources/js/event-maker/index.js");
-/* harmony import */ var _mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/helper-mixin */ "./resources/js/mixins/helper-mixin.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _event_maker_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event-maker/index */ "./resources/js/event-maker/index.js");
+/* harmony import */ var _mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/helper-mixin */ "./resources/js/mixins/helper-mixin.js");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -2186,25 +2159,89 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "app",
-  mixins: [_mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_1__["HelperMixin"]],
+  mixins: [_mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_2__["HelperMixin"]],
   data: function data() {
     return {
       event_dates: {},
       event_day: [],
       event_name: '',
-      show_event_name: false
+      show_event_name: false,
+      alert_message: {
+        get_api: 'There\'s something wrong on response.'
+      }
     };
   },
   created: function created() {
     var _this = this;
 
-    _event_maker_index__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('getAllEventDates', function (oEventDates, oEventSettings) {
-      _this.event_dates = oEventDates;
-      _this.event_day = oEventSettings.days.map(function (oDays) {
-        return oDays.day;
-      });
-      _this.event_name = oEventSettings.event_name;
-    });
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      var oEventSettings;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$on('getAllEventDates', function (oEventDates, oEventSettings) {
+                _this.event_dates = oEventDates;
+                _this.event_day = oEventSettings.days.map(function (oDays) {
+                  return oDays.day;
+                });
+                _this.event_name = oEventSettings.event_name;
+              });
+              _context.next = 3;
+              return _this.getEventSettingsApi();
+
+            case 3:
+              oEventSettings = _context.sent;
+
+              if (oEventSettings !== null) {
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderAllEventDates', oEventSettings);
+                oEventSettings.days = _this.event_day;
+                _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderEventSettings', oEventSettings);
+              }
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
+  },
+  methods: {
+    getEventSettingsApi: function getEventSettingsApi() {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var oResponse;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return _this2.apiRequest('GET', 'events/1');
+
+              case 2:
+                oResponse = _context2.sent;
+
+                if (!(oResponse.status !== 200)) {
+                  _context2.next = 6;
+                  break;
+                }
+
+                alert(_this2.alert_message.get_api);
+                return _context2.abrupt("return", null);
+
+              case 6:
+                return _context2.abrupt("return", oResponse.data);
+
+              case 7:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    }
   }
 });
 
@@ -20647,6 +20684,7 @@ var render = function() {
                 name: "event_name",
                 type: "text",
                 id: "event_name",
+                placeholder: "Event Name",
                 required: ""
               },
               domProps: { value: _vm.form.event_name },
@@ -20666,15 +20704,13 @@ var render = function() {
                   "/" +
                   _vm._s(_vm.counter.event_name)
               )
-            ]),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "event_name" } }, [_vm._v("Event")])
+            ])
           ])
         ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "form-row" }, [
-        _c("div", { staticClass: "col-lg-6" }, [
+        _c("div", { staticClass: "col-lg-12" }, [
           _c(
             "div",
             {
@@ -20716,7 +20752,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-lg-6" }, [
+        _c("div", { staticClass: "col-lg-12" }, [
           _c(
             "div",
             {
@@ -20751,7 +20787,7 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
-              _c("label", { attrs: { for: "end_date" } }, [_vm._v("Date Date")])
+              _c("label", { attrs: { for: "end_date" } }, [_vm._v("End Date")])
             ]
           )
         ])
@@ -20777,7 +20813,10 @@ var render = function() {
                       type: "checkbox",
                       id: _vm.getStringDay(iDay - 1)
                     },
-                    domProps: { value: iDay - 1 }
+                    domProps: {
+                      checked: _vm.form.event_day.includes(iDay - 1),
+                      value: iDay - 1
+                    }
                   }),
                   _vm._v(" "),
                   _c(
@@ -33268,6 +33307,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventBus", function() { return EventBus; });
 /* harmony import */ var _components_EventForm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/EventForm */ "./resources/js/components/EventForm.vue");
 /* harmony import */ var _components_EventList__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/EventList */ "./resources/js/components/EventList.vue");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 __webpack_require__(/*! ../bootstrap */ "./resources/js/bootstrap.js");
 
 
@@ -33289,9 +33340,72 @@ var app = new Vue({
     EventBus.$on('showAlertMessage', function () {
       var sAlertType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'success';
       var bIsSuccess = sAlertType === 'success';
+      console.log(bIsSuccess);
       _this.show_success = bIsSuccess;
       _this.show_fail = !bIsSuccess;
     });
+    EventBus.$on('renderAllEventDates', this.renderAllEventDates);
+  },
+  methods: {
+    /**
+     * Render all event dates
+     * @params object oEventSettings
+     */
+    renderAllEventDates: function renderAllEventDates(oEventSettings) {
+      var aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
+      var oFormattedEventDates = this.formatEventDates(aEventDates);
+      EventBus.$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
+    },
+
+    /**
+     * Get all in between the dates
+     * @param string sStartDate
+     * @param string sEndDate
+     * @returns oDates
+     */
+    getAllInBetweenDates: function getAllInBetweenDates(sStartDate, sEndDate) {
+      var aDates = []; //to avoid modifying the original date
+
+      var oStartDate = new Date(sStartDate);
+      var oEndDate = new Date(sEndDate);
+
+      while (oStartDate <= oEndDate) {
+        aDates = [].concat(_toConsumableArray(aDates), [new Date(oStartDate)]);
+        oStartDate.setDate(oStartDate.getDate() + 1);
+      }
+
+      return aDates;
+    },
+
+    /**
+     * Format event date
+     * To be used for rendering of dates on EventList.vue
+     * @param array aEventDates
+     * @returns object oFormattedEventDates
+     */
+    formatEventDates: function formatEventDates(aEventDates) {
+      var oFormattedEventDates = {};
+      var iCurrentYear = null;
+      var iCurrentMonth = null;
+      aEventDates.forEach(function (oDate, iIndex) {
+        var iFullYear = oDate.getFullYear();
+        var iMonth = oDate.getMonth();
+
+        if (iFullYear > iCurrentYear || iCurrentYear === null) {
+          iCurrentYear = iFullYear;
+          oFormattedEventDates[iFullYear] = {};
+          iCurrentMonth = null;
+        }
+
+        if (iMonth > iCurrentMonth || iCurrentMonth === null) {
+          iCurrentMonth = iMonth;
+          oFormattedEventDates[iFullYear][iMonth] = [];
+        }
+
+        oFormattedEventDates[iFullYear][iMonth].push(oDate);
+      });
+      return oFormattedEventDates;
+    }
   }
 });
 

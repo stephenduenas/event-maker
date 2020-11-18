@@ -3,23 +3,22 @@
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
-                    <input name="event_name" type="text" id="event_name" class="form-control" v-model="form.event_name" required>
+                    <input name="event_name" type="text" id="event_name" class="form-control" placeholder="Event Name" v-model="form.event_name" required>
                     <small class="text-muted float-right">{{ form.event_name.length }}/{{ counter.event_name }}</small>
-                    <label for="event_name">Event</label>
                 </div>
             </div>
         </div>
         <div class="form-row">
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="md-form md-outline input-with-post-icon datepicker">
                     <input name="start_date" placeholder="Select date" type="date" id="start_date" class="form-control" v-model="form.start_date" required>
                     <label for="start_date">Start Date</label>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="md-form md-outline input-with-post-icon datepicker">
                     <input name="end_date" placeholder="Select date" type="date" id="end_date" class="form-control" v-model="form.end_date" required>
-                    <label for="end_date">Date Date</label>
+                    <label for="end_date">End Date</label>
                 </div>
             </div>
         </div>
@@ -28,7 +27,7 @@
             <div class="col-lg-12">
                 <div class="my-3 m-lg-0">
                     <div class="custom-control custom-checkbox custom-control-inline" v-for="iDay in days">
-                        <input name="day[]" :value="iDay-1" type="checkbox" class="custom-control-input" :id="getStringDay(iDay-1)">
+                        <input name="day[]" :checked="form.event_day.includes(iDay-1)" :value="iDay-1" type="checkbox" class="custom-control-input" :id="getStringDay(iDay-1)">
                         <label class="custom-control-label" :for="getStringDay(iDay-1)">{{ getStringDay(iDay-1) }}</label>
                     </div>
                 </div>
@@ -55,6 +54,7 @@ export default {
                 event_name: '',
                 start_date: '',
                 end_date: '',
+                event_day: [],
             },
             counter: {
                 event_name: 100
@@ -69,8 +69,14 @@ export default {
         /**
          * Add default date (today)
          */
-        this.form.start_date = new Date().toISOString().slice(0,10);
-        this.form.end_date = new Date().toISOString().slice(0,10);
+        this.form.start_date = this.formatDate();
+        this.form.end_date = this.formatDate();
+        EventBus.$on('renderEventSettings', (oEventSettings) => {
+            this.form.start_date = this.formatDate(oEventSettings.start_date);
+            this.form.end_date = this.formatDate(oEventSettings.end_date);
+            this.form.event_name = oEventSettings.event_name;
+            this.form.event_day = oEventSettings.days;
+        });
     },
     watch: {
         'form.event_name'(sNew, sOld) {
@@ -80,6 +86,20 @@ export default {
         }
     },
     methods: {
+
+        /**
+         * Formate Date
+         * @param string sDate => default date_today
+         * @return string date
+         */
+        formatDate(sDate = new Date()) {
+            /**
+             * 'en-CA' to use yyyy-mm-dd format
+             */
+            const LOCALE = 'en-CA'
+            return new Date(sDate).toLocaleDateString('en-CA');
+        },
+
         /**
          * Save/Submit Form
          */
@@ -87,13 +107,21 @@ export default {
             const bIsValid = this.validateForm();
             if (bIsValid) {
                 const oFormData = new FormData(this.$refs.eventForm);
-                const oResult = await this.apiRequest('POST', 'events/1', oFormData);
-                console.log(oResult);
-                oResult.status === 200 ? EventBus.$emit('showAlertMessage')  : EventBus.$emit('showAlertMessage', 'error');
-                this.renderAllEventDates(oResult.data);
+                const oResponse = await this.apiRequest('POST', 'events/1', oFormData);
+                console.log(oResponse.status);
+                if (oResponse.status === 201) {
+                    EventBus.$emit('showAlertMessage');
+                    EventBus.$emit('renderAllEventDates', oResponse.data);
+                    return;
+                }
+                EventBus.$emit('showAlertMessage', 'error');
             }
         },
 
+        /**
+         * Validate Form
+         * @returns bool
+         */
         validateForm() {
             if (this.form.event_name.length === 0) {
                 alert(this.alert_message.empty_event_name);
@@ -104,61 +132,6 @@ export default {
                 return false;
             }
             return true;
-        },
-
-        /**
-         * Render all event dates
-         * @params object oEventSettings
-         */
-        renderAllEventDates(oEventSettings) {
-            const aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
-            const oFormattedEventDates = this.formatEventDates(aEventDates);
-            EventBus.$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
-        },
-
-        /**
-         * Get all in between the dates
-         * @param string sStartDate
-         * @param string sEndDate
-         * @returns oDates
-         */
-        getAllInBetweenDates(sStartDate, sEndDate) {
-            let aDates = [];
-            //to avoid modifying the original date
-            const oStartDate = new Date(sStartDate);
-            const oEndDate =  new Date(sEndDate);
-            while (oStartDate <= oEndDate) {
-                aDates = [...aDates, new Date(oStartDate)];
-                oStartDate.setDate(oStartDate.getDate() + 1)
-            }
-            return aDates;
-        },
-
-        /**
-         * Format event date
-         * To be used for rendering of dates on EventList.vue
-         * @param array aEventDates
-         * @returns object oFormattedEventDates
-         */
-        formatEventDates(aEventDates) {
-            let oFormattedEventDates = {};
-            let iCurrentYear = null;
-            let iCurrentMonth = null;
-            aEventDates.forEach((oDate, iIndex) => {
-                let iFullYear = oDate.getFullYear();
-                let iMonth = oDate.getMonth();
-                if (iFullYear > iCurrentYear || iCurrentYear === null) {
-                    iCurrentYear = iFullYear;
-                    oFormattedEventDates[iFullYear] = {};
-                    iCurrentMonth = null;
-                }
-                if (iMonth > iCurrentMonth || iCurrentMonth === null) {
-                    iCurrentMonth = iMonth;
-                    oFormattedEventDates[iFullYear][iMonth] = [];
-                }
-                oFormattedEventDates[iFullYear][iMonth].push(oDate);
-            })
-            return oFormattedEventDates;
         },
     }
 }

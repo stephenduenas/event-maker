@@ -43,9 +43,12 @@ export default {
             event_day: [],
             event_name: '',
             show_event_name: false,
+            alert_message: {
+                get_api: 'There\'s something wrong on response.'
+            }
         }
     },
-    created() {
+    async created() {
         EventBus.$on('getAllEventDates', (oEventDates, oEventSettings) => {
             this.event_dates = oEventDates;
             this.event_day = oEventSettings.days.map(oDays => {
@@ -53,7 +56,24 @@ export default {
             });
             this.event_name = oEventSettings.event_name;
         });
+        const oEventSettings = await this.getEventSettingsApi();
+        if (oEventSettings !== null) {
+            EventBus.$emit('renderAllEventDates', oEventSettings);
+            oEventSettings.days = this.event_day;
+            EventBus.$emit('renderEventSettings', oEventSettings);
+        }
+        
     },
+    methods: {
+        async getEventSettingsApi() {
+            const oResponse = await this.apiRequest('GET', 'events/1');
+            if (oResponse.status !== 200) {
+                alert(this.alert_message.get_api);
+                return null;
+            }
+            return oResponse.data
+        },
+    }
 }
 
 </script>

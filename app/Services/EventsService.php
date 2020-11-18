@@ -39,6 +39,16 @@ class EventsService extends BaseService
     }
 
     /**
+     * Main method for read
+     * @param int $iEventId
+     * @return array
+     */
+    public function read(int $iEventId)
+    {
+        return $this->oEventsRepository->read($iEventId)[0] ?? [];
+    }
+
+    /**
      * Main method for create
      * @param int $iEventId
      * @return array
@@ -53,7 +63,7 @@ class EventsService extends BaseService
         $aEventsData = Arr::add($aRequestParams, 'day', []);
         $aDays = $this->wrapArrayValues($aEventsData['day'], 'day');
         $aEventsData['day'] = $aDays;
-        return $this->oEventsRepository->create($aEventsData)[0];
+        return $this->oEventsRepository->create($aEventsData)[0] ?? [];
     }
 
 }

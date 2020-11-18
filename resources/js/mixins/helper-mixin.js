@@ -25,7 +25,6 @@ export const HelperMixin = {
                 return error.response;
             }
         },
-        
         /**
          * Get String Month
          * @param {object} oDate 
