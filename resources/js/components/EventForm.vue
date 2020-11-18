@@ -1,7 +1,5 @@
 <template>
-    
     <form ref="eventForm" id="contact-form" class="mb-5" name="contact-form" action="api/events/1" method="GET">
-    
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
@@ -39,9 +37,9 @@
         <div class="form-row justify-content-center mt-lg-3">
                 <button type="submit" class="btn btn-primary btn-md" @click.prevent="submitForm()">Save</button>
         </div>
-
     </form>
 </template>
+
 <script>
 import { HelperMixin } from '../mixins/helper-mixin.js'
 import { EventBus } from '../event-maker/index'
@@ -138,7 +136,7 @@ export default {
 
         /**
          * Format event date
-         * To be used for rendering on EventList.vue
+         * To be used for rendering of dates on EventList.vue
          * @param array aEventDates
          * @returns object oFormattedEventDates
          */

@@ -26,6 +26,10 @@ export const HelperMixin = {
             }
         },
         
+        /**
+         * Get String Month
+         * @param {object} oDate 
+         */
         getStringMonth(oDate) {
             const LOCALE = 'default';
             const OPTIONS = {
@@ -33,6 +37,10 @@ export const HelperMixin = {
             };
             return oDate.toLocaleString(LOCALE, OPTIONS);
         },
+        /**
+         * Get String Day
+         * @param {int} iDay 
+         */
         getStringDay(iDay) {
             const oDays = {
                 0: 'Sun',

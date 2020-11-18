@@ -29,11 +29,7 @@
         </div>
     </nav>
     <main>
-        <div class="left-gutter unique-color">
-        </div>
-        <div>
-            @yield('main')
-        </div>
+        @yield('main')
     </main>
 
     <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>

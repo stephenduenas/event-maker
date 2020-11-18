@@ -1984,8 +1984,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2110,7 +2108,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
     /**
      * Format event date
-     * To be used for rendering on EventList.vue
+     * To be used for rendering of dates on EventList.vue
      * @param array aEventDates
      * @returns object oFormattedEventDates
      */
@@ -33366,6 +33364,11 @@ var HelperMixin = {
         }, _callee, null, [[5, 11]]);
       }))();
     },
+
+    /**
+     * Get String Month
+     * @param {object} oDate 
+     */
     getStringMonth: function getStringMonth(oDate) {
       var LOCALE = 'default';
       var OPTIONS = {
@@ -33373,6 +33376,11 @@ var HelperMixin = {
       };
       return oDate.toLocaleString(LOCALE, OPTIONS);
     },
+
+    /**
+     * Get String Day
+     * @param {int} iDay 
+     */
     getStringDay: function getStringDay(iDay) {
       var oDays = {
         0: 'Sun',

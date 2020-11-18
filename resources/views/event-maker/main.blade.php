@@ -4,8 +4,8 @@
 @section('Page Title', 'Event Maker')
 
 @section('main')
-<div id="app" class="container-fluid p-3">
-    <div class="alert alert-success" role="alert" v-if="show_success">
+<div id="app" class="container">
+    <div class="alert alert-success" role="alert" v-if="false">
         <a href="#" class="alert-link">Event Successfully Saved</a>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
