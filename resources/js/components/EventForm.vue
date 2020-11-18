@@ -1,9 +1,12 @@
 <template>
+    
     <form ref="eventForm" id="contact-form" class="mb-5" name="contact-form" action="api/events/1" method="GET">
+    
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
                     <input name="event_name" type="text" id="event_name" class="form-control" v-model="form.event_name" required>
+                    <small class="text-muted float-right">{{ form.event_name.length }}/{{ counter.event_name }}</small>
                     <label for="event_name">Event</label>
                 </div>
             </div>
@@ -12,13 +15,13 @@
             <div class="col-lg-6">
                 <div class="md-form md-outline input-with-post-icon datepicker">
                     <input name="start_date" placeholder="Select date" type="date" id="start_date" class="form-control" v-model="form.start_date" required>
-                    <label for="start_date">Initial Date</label>
+                    <label for="start_date">Start Date</label>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="md-form md-outline input-with-post-icon datepicker">
                     <input name="end_date" placeholder="Select date" type="date" id="end_date" class="form-control" v-model="form.end_date" required>
-                    <label for="end_date">Final Date</label>
+                    <label for="end_date">Date Date</label>
                 </div>
             </div>
         </div>
@@ -33,9 +36,10 @@
                 </div>
             </div>                    
         </div>
-        <div class="form-row justify-content-center">
+        <div class="form-row justify-content-center mt-lg-3">
                 <button type="submit" class="btn btn-primary btn-md" @click.prevent="submitForm()">Save</button>
         </div>
+
     </form>
 </template>
 <script>
@@ -50,9 +54,16 @@ export default {
             event_dates: {},
             days: 7,
             form: {
-                event_name: 'Chula',
+                event_name: '',
                 start_date: '',
                 end_date: '',
+            },
+            counter: {
+                event_name: 100
+            },
+            alert_message: {
+                empty_event_name: 'Please enter event name',
+                greater_start_date: 'Start date must not exceed end date',
             }
         }
     },
@@ -63,14 +74,38 @@ export default {
         this.form.start_date = new Date().toISOString().slice(0,10);
         this.form.end_date = new Date().toISOString().slice(0,10);
     },
+    watch: {
+        'form.event_name'(sNew, sOld) {
+            if (sNew.length > this.counter.event_name) {
+                this.form.event_name = sOld;
+            }
+        }
+    },
     methods: {
         /**
          * Save/Submit Form
          */
         async submitForm() {
-            const oFormData = new FormData(this.$refs.eventForm);
-            const oResult = await this.apiRequest('POST', 'events/1', oFormData);
-            this.renderAllEventDates(oResult.data)
+            const bIsValid = this.validateForm();
+            if (bIsValid) {
+                const oFormData = new FormData(this.$refs.eventForm);
+                const oResult = await this.apiRequest('POST', 'events/1', oFormData);
+                console.log(oResult);
+                oResult.status === 200 ? EventBus.$emit('showAlertMessage')  : EventBus.$emit('showAlertMessage', 'error');
+                this.renderAllEventDates(oResult.data);
+            }
+        },
+
+        validateForm() {
+            if (this.form.event_name.length === 0) {
+                alert(this.alert_message.empty_event_name);
+                return false;
+            };
+            if (new Date(this.form.start_date) > new Date(this.form.end_date)) {
+                alert(this.alert_message.greater_start_date);
+                return false;
+            }
+            return true;
         },
 
         /**

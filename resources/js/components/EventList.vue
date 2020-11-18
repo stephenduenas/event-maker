@@ -52,7 +52,6 @@ export default {
                 return oDays.day;
             });
             this.event_name = oEventSettings.event_name;
-            console.log(this.event_day);
         });
     },
 }

@@ -1982,6 +1982,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -1992,9 +1996,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       event_dates: {},
       days: 7,
       form: {
-        event_name: 'Chula',
+        event_name: '',
         start_date: '',
         end_date: ''
+      },
+      counter: {
+        event_name: 100
+      },
+      alert_message: {
+        empty_event_name: 'Please enter event name',
+        greater_start_date: 'Start date must not exceed end date'
       }
     };
   },
@@ -2005,6 +2016,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.form.start_date = new Date().toISOString().slice(0, 10);
     this.form.end_date = new Date().toISOString().slice(0, 10);
   },
+  watch: {
+    'form.event_name': function formEvent_name(sNew, sOld) {
+      if (sNew.length > this.counter.event_name) {
+        this.form.event_name = sOld;
+      }
+    }
+  },
   methods: {
     /**
      * Save/Submit Form
@@ -2013,27 +2031,51 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var oFormData, oResult;
+        var bIsValid, oFormData, oResult;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                bIsValid = _this.validateForm();
+
+                if (!bIsValid) {
+                  _context.next = 9;
+                  break;
+                }
+
                 oFormData = new FormData(_this.$refs.eventForm);
-                _context.next = 3;
+                _context.next = 5;
                 return _this.apiRequest('POST', 'events/1', oFormData);
 
-              case 3:
+              case 5:
                 oResult = _context.sent;
+                console.log(oResult);
+                oResult.status === 200 ? _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage') : _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
 
                 _this.renderAllEventDates(oResult.data);
 
-              case 5:
+              case 9:
               case "end":
                 return _context.stop();
             }
           }
         }, _callee);
       }))();
+    },
+    validateForm: function validateForm() {
+      if (this.form.event_name.length === 0) {
+        alert(this.alert_message.empty_event_name);
+        return false;
+      }
+
+      ;
+
+      if (new Date(this.form.start_date) > new Date(this.form.end_date)) {
+        alert(this.alert_message.greater_start_date);
+        return false;
+      }
+
+      return true;
     },
 
     /**
@@ -2164,7 +2206,6 @@ __webpack_require__.r(__webpack_exports__);
         return oDays.day;
       });
       _this.event_name = oEventSettings.event_name;
-      console.log(_this.event_day);
     });
   }
 });
@@ -20621,6 +20662,14 @@ var render = function() {
               }
             }),
             _vm._v(" "),
+            _c("small", { staticClass: "text-muted float-right" }, [
+              _vm._v(
+                _vm._s(_vm.form.event_name.length) +
+                  "/" +
+                  _vm._s(_vm.counter.event_name)
+              )
+            ]),
+            _vm._v(" "),
             _c("label", { attrs: { for: "event_name" } }, [_vm._v("Event")])
           ])
         ])
@@ -20663,7 +20712,7 @@ var render = function() {
               }),
               _vm._v(" "),
               _c("label", { attrs: { for: "start_date" } }, [
-                _vm._v("Initial Date")
+                _vm._v("Start Date")
               ])
             ]
           )
@@ -20704,9 +20753,7 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
-              _c("label", { attrs: { for: "end_date" } }, [
-                _vm._v("Final Date")
-              ])
+              _c("label", { attrs: { for: "end_date" } }, [_vm._v("Date Date")])
             ]
           )
         ])
@@ -20751,7 +20798,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "form-row justify-content-center" }, [
+      _c("div", { staticClass: "form-row justify-content-center mt-lg-3" }, [
         _c(
           "button",
           {
@@ -33233,6 +33280,20 @@ var app = new Vue({
   components: {
     EventForm: _components_EventForm__WEBPACK_IMPORTED_MODULE_0__["default"],
     EventList: _components_EventList__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  data: {
+    show_success: false,
+    show_fail: false
+  },
+  created: function created() {
+    var _this = this;
+
+    EventBus.$on('showAlertMessage', function () {
+      var sAlertType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'success';
+      var bIsSuccess = sAlertType === 'success';
+      _this.show_success = bIsSuccess;
+      _this.show_fail = !bIsSuccess;
+    });
   }
 });
 

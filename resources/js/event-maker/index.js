@@ -11,4 +11,16 @@ var app = new Vue({
         EventForm,
         EventList
     },
+    data: {
+        show_success: false,
+        show_fail: false,
+    },
+
+    created() {
+        EventBus.$on('showAlertMessage', (sAlertType = 'success') => {
+            const bIsSuccess = sAlertType === 'success';
+            this.show_success = bIsSuccess;
+            this.show_fail = !bIsSuccess;
+        });
+    },
 });
