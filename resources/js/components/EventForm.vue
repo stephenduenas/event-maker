@@ -3,7 +3,7 @@
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
-                    <input name="event_name" type="text" id="event_name" class="form-control">
+                    <input name="event_name" type="text" id="event_name" class="form-control" v-model="form.event_name" required>
                     <label for="event_name">Event</label>
                 </div>
             </div>
@@ -11,47 +11,24 @@
         <div class="form-row">
             <div class="col-lg-6">
                 <div class="md-form md-outline input-with-post-icon datepicker">
-                    <input name="start_date" placeholder="Select date" type="date" id="start_date" class="form-control">
+                    <input name="start_date" placeholder="Select date" type="date" id="start_date" class="form-control" v-model="form.start_date" required>
                     <label for="start_date">Initial Date</label>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="md-form md-outline input-with-post-icon datepicker">
-                    <input name="end_date" placeholder="Select date" type="date" id="end_date" class="form-control">
+                    <input name="end_date" placeholder="Select date" type="date" id="end_date" class="form-control" v-model="form.end_date" required>
                     <label for="end_date">Final Date</label>
                 </div>
             </div>
         </div>
+
         <div class="form-row">
             <div class="col-lg-12">
                 <div class="my-3 m-lg-0">
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="1" type="checkbox" class="custom-control-input" id="monday">
-                        <label class="custom-control-label" for="monday">Mon</label>
-                    </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="2" type="checkbox" class="custom-control-input" id="tuesday">
-                        <label class="custom-control-label" for="tuesday">Tue</label>
-                        </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="3" type="checkbox" class="custom-control-input" id="wednesday">
-                        <label class="custom-control-label" for="wednesday">Wed</label>
-                    </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="4" type="checkbox" class="custom-control-input" id="thursday">
-                        <label class="custom-control-label" for="thursday">Thu</label>
-                    </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="5" type="checkbox" class="custom-control-input" id="friday">
-                        <label class="custom-control-label" for="friday">Fri</label>
-                    </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="6" type="checkbox" class="custom-control-input" id="saturday">
-                        <label class="custom-control-label" for="saturday">Sat</label>
-                    </div>
-                    <div class="custom-control custom-checkbox custom-control-inline">
-                        <input name="day[]" value="7" type="checkbox" class="custom-control-input" id="sunday">
-                        <label class="custom-control-label" for="sunday">Sun</label>
+                    <div class="custom-control custom-checkbox custom-control-inline" v-for="iDay in days">
+                        <input name="day[]" :value="iDay-1" type="checkbox" class="custom-control-input" :id="getStringDay(iDay-1)">
+                        <label class="custom-control-label" :for="getStringDay(iDay-1)">{{ getStringDay(iDay-1) }}</label>
                     </div>
                 </div>
             </div>                    
@@ -63,45 +40,93 @@
 </template>
 <script>
 import { HelperMixin } from '../mixins/helper-mixin.js'
+import { EventBus } from '../event-maker/index'
 
 export default {
     name: "app",
     mixins: [HelperMixin],
     data() {
         return {
-            message: 'Component Message!'
+            event_dates: {},
+            days: 7,
+            form: {
+                event_name: 'Chula',
+                start_date: '',
+                end_date: '',
+            }
         }
     },
+    beforeMount() {
+        /**
+         * Add default date (today)
+         */
+        this.form.start_date = new Date().toISOString().slice(0,10);
+        this.form.end_date = new Date().toISOString().slice(0,10);
+    },
     methods: {
+        /**
+         * Save/Submit Form
+         */
         async submitForm() {
             const oFormData = new FormData(this.$refs.eventForm);
             const oResult = await this.apiRequest('POST', 'events/1', oFormData);
-            let oData = oResult.data;
-            let aEventDates = this.getAllInBetweenDates(oData.start_date, oData.end_date);
-            this.formatEventDates(aEventDates);
-
+            this.renderAllEventDates(oResult.data)
         },
+
+        /**
+         * Render all event dates
+         * @params object oEventSettings
+         */
+        renderAllEventDates(oEventSettings) {
+            const aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
+            const oFormattedEventDates = this.formatEventDates(aEventDates);
+            EventBus.$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
+        },
+
+        /**
+         * Get all in between the dates
+         * @param string sStartDate
+         * @param string sEndDate
+         * @returns oDates
+         */
         getAllInBetweenDates(sStartDate, sEndDate) {
-            let oDates = [];
+            let aDates = [];
             //to avoid modifying the original date
             const oStartDate = new Date(sStartDate);
             const oEndDate =  new Date(sEndDate);
             while (oStartDate <= oEndDate) {
-                oDates = [...oDates, new Date(oStartDate)];
+                aDates = [...aDates, new Date(oStartDate)];
                 oStartDate.setDate(oStartDate.getDate() + 1)
             }
-            return oDates;
+            return aDates;
         },
-        formatEventDates(aEventDates) {
 
+        /**
+         * Format event date
+         * To be used for rendering on EventList.vue
+         * @param array aEventDates
+         * @returns object oFormattedEventDates
+         */
+        formatEventDates(aEventDates) {
+            let oFormattedEventDates = {};
+            let iCurrentYear = null;
+            let iCurrentMonth = null;
+            aEventDates.forEach((oDate, iIndex) => {
+                let iFullYear = oDate.getFullYear();
+                let iMonth = oDate.getMonth();
+                if (iFullYear > iCurrentYear || iCurrentYear === null) {
+                    iCurrentYear = iFullYear;
+                    oFormattedEventDates[iFullYear] = {};
+                    iCurrentMonth = null;
+                }
+                if (iMonth > iCurrentMonth || iCurrentMonth === null) {
+                    iCurrentMonth = iMonth;
+                    oFormattedEventDates[iFullYear][iMonth] = [];
+                }
+                oFormattedEventDates[iFullYear][iMonth].push(oDate);
+            })
+            return oFormattedEventDates;
         },
-        getStringMonth(oDate) {
-            const LOCALE = 'default';
-            const OPTIONS = {
-                month: 'long'
-            };
-            return oDate.toLocaleString(LOCALE, OPTIONS);
-        }
     }
 }
 </script>

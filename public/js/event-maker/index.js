@@ -1923,6 +1923,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _mixins_helper_mixin_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/helper-mixin.js */ "./resources/js/mixins/helper-mixin.js");
+/* harmony import */ var _event_maker_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../event-maker/index */ "./resources/js/event-maker/index.js");
 
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
@@ -1981,44 +1982,38 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "app",
   mixins: [_mixins_helper_mixin_js__WEBPACK_IMPORTED_MODULE_1__["HelperMixin"]],
   data: function data() {
     return {
-      message: 'Component Message!'
+      event_dates: {},
+      days: 7,
+      form: {
+        event_name: 'Chula',
+        start_date: '',
+        end_date: ''
+      }
     };
   },
+  beforeMount: function beforeMount() {
+    /**
+     * Add default date (today)
+     */
+    this.form.start_date = new Date().toISOString().slice(0, 10);
+    this.form.end_date = new Date().toISOString().slice(0, 10);
+  },
   methods: {
+    /**
+     * Save/Submit Form
+     */
     submitForm: function submitForm() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var oFormData, oResult, oData, aEventDates;
+        var oFormData, oResult;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -2029,12 +2024,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 3:
                 oResult = _context.sent;
-                oData = oResult.data;
-                aEventDates = _this.getAllInBetweenDates(oData.start_date, oData.end_date);
 
-                _this.formatEventDates(aEventDates);
+                _this.renderAllEventDates(oResult.data);
 
-              case 7:
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -2042,26 +2035,65 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
+
+    /**
+     * Render all event dates
+     * @params object oEventSettings
+     */
+    renderAllEventDates: function renderAllEventDates(oEventSettings) {
+      var aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
+      var oFormattedEventDates = this.formatEventDates(aEventDates);
+      _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
+    },
+
+    /**
+     * Get all in between the dates
+     * @param string sStartDate
+     * @param string sEndDate
+     * @returns oDates
+     */
     getAllInBetweenDates: function getAllInBetweenDates(sStartDate, sEndDate) {
-      var oDates = []; //to avoid modifying the original date
+      var aDates = []; //to avoid modifying the original date
 
       var oStartDate = new Date(sStartDate);
       var oEndDate = new Date(sEndDate);
 
       while (oStartDate <= oEndDate) {
-        oDates = [].concat(_toConsumableArray(oDates), [new Date(oStartDate)]);
+        aDates = [].concat(_toConsumableArray(aDates), [new Date(oStartDate)]);
         oStartDate.setDate(oStartDate.getDate() + 1);
       }
 
-      return oDates;
+      return aDates;
     },
-    formatEventDates: function formatEventDates(aEventDates) {},
-    getStringMonth: function getStringMonth(oDate) {
-      var LOCALE = 'default';
-      var OPTIONS = {
-        month: 'long'
-      };
-      return oDate.toLocaleString(LOCALE, OPTIONS);
+
+    /**
+     * Format event date
+     * To be used for rendering on EventList.vue
+     * @param array aEventDates
+     * @returns object oFormattedEventDates
+     */
+    formatEventDates: function formatEventDates(aEventDates) {
+      var oFormattedEventDates = {};
+      var iCurrentYear = null;
+      var iCurrentMonth = null;
+      aEventDates.forEach(function (oDate, iIndex) {
+        var iFullYear = oDate.getFullYear();
+        var iMonth = oDate.getMonth();
+
+        if (iFullYear > iCurrentYear || iCurrentYear === null) {
+          iCurrentYear = iFullYear;
+          oFormattedEventDates[iFullYear] = {};
+          iCurrentMonth = null;
+        }
+
+        if (iMonth > iCurrentMonth || iCurrentMonth === null) {
+          iCurrentMonth = iMonth;
+          oFormattedEventDates[iFullYear][iMonth] = [];
+        }
+
+        oFormattedEventDates[iFullYear][iMonth].push(oDate);
+      });
+      return oFormattedEventDates;
     }
   }
 });
@@ -2077,6 +2109,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_maker_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event-maker/index */ "./resources/js/event-maker/index.js");
+/* harmony import */ var _mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/helper-mixin */ "./resources/js/mixins/helper-mixin.js");
 //
 //
 //
@@ -2105,12 +2139,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "app",
+  mixins: [_mixins_helper_mixin__WEBPACK_IMPORTED_MODULE_1__["HelperMixin"]],
   data: function data() {
     return {
-      message: 'Component Message!'
+      event_dates: {},
+      event_day: [],
+      event_name: '',
+      show_event_name: false
     };
+  },
+  created: function created() {
+    var _this = this;
+
+    _event_maker_index__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('getAllEventDates', function (oEventDates, oEventSettings) {
+      _this.event_dates = oEventDates;
+      _this.event_day = oEventSettings.days.map(function (oDays) {
+        return oDays.day;
+      });
+      _this.event_name = oEventSettings.event_name;
+      console.log(_this.event_day);
+    });
   }
 });
 
@@ -20536,11 +20591,165 @@ var render = function() {
       }
     },
     [
-      _vm._m(0),
+      _c("div", { staticClass: "form-row" }, [
+        _c("div", { staticClass: "col-md-12" }, [
+          _c("div", { staticClass: "md-form" }, [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.form.event_name,
+                  expression: "form.event_name"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                name: "event_name",
+                type: "text",
+                id: "event_name",
+                required: ""
+              },
+              domProps: { value: _vm.form.event_name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.form, "event_name", $event.target.value)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("label", { attrs: { for: "event_name" } }, [_vm._v("Event")])
+          ])
+        ])
+      ]),
       _vm._v(" "),
-      _vm._m(1),
+      _c("div", { staticClass: "form-row" }, [
+        _c("div", { staticClass: "col-lg-6" }, [
+          _c(
+            "div",
+            {
+              staticClass: "md-form md-outline input-with-post-icon datepicker"
+            },
+            [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.form.start_date,
+                    expression: "form.start_date"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  name: "start_date",
+                  placeholder: "Select date",
+                  type: "date",
+                  id: "start_date",
+                  required: ""
+                },
+                domProps: { value: _vm.form.start_date },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.form, "start_date", $event.target.value)
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "start_date" } }, [
+                _vm._v("Initial Date")
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-lg-6" }, [
+          _c(
+            "div",
+            {
+              staticClass: "md-form md-outline input-with-post-icon datepicker"
+            },
+            [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.form.end_date,
+                    expression: "form.end_date"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  name: "end_date",
+                  placeholder: "Select date",
+                  type: "date",
+                  id: "end_date",
+                  required: ""
+                },
+                domProps: { value: _vm.form.end_date },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.form, "end_date", $event.target.value)
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "end_date" } }, [
+                _vm._v("Final Date")
+              ])
+            ]
+          )
+        ])
+      ]),
       _vm._v(" "),
-      _vm._m(2),
+      _c("div", { staticClass: "form-row" }, [
+        _c("div", { staticClass: "col-lg-12" }, [
+          _c(
+            "div",
+            { staticClass: "my-3 m-lg-0" },
+            _vm._l(_vm.days, function(iDay) {
+              return _c(
+                "div",
+                {
+                  staticClass:
+                    "custom-control custom-checkbox custom-control-inline"
+                },
+                [
+                  _c("input", {
+                    staticClass: "custom-control-input",
+                    attrs: {
+                      name: "day[]",
+                      type: "checkbox",
+                      id: _vm.getStringDay(iDay - 1)
+                    },
+                    domProps: { value: iDay - 1 }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "label",
+                    {
+                      staticClass: "custom-control-label",
+                      attrs: { for: _vm.getStringDay(iDay - 1) }
+                    },
+                    [_vm._v(_vm._s(_vm.getStringDay(iDay - 1)))]
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "form-row justify-content-center" }, [
         _c(
@@ -20561,289 +20770,17 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "md-form" }, [
-          _c("input", {
-            staticClass: "form-control",
-            attrs: { name: "event_name", type: "text", id: "event_name" }
-          }),
-          _vm._v(" "),
-          _c("label", { attrs: { for: "event_name" } }, [_vm._v("Event")])
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "col-lg-6" }, [
-        _c(
-          "div",
-          { staticClass: "md-form md-outline input-with-post-icon datepicker" },
-          [
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                name: "start_date",
-                placeholder: "Select date",
-                type: "date",
-                id: "start_date"
-              }
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "start_date" } }, [
-              _vm._v("Initial Date")
-            ])
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-lg-6" }, [
-        _c(
-          "div",
-          { staticClass: "md-form md-outline input-with-post-icon datepicker" },
-          [
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                name: "end_date",
-                placeholder: "Select date",
-                type: "date",
-                id: "end_date"
-              }
-            }),
-            _vm._v(" "),
-            _c("label", { attrs: { for: "end_date" } }, [_vm._v("Final Date")])
-          ]
-        )
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "col-lg-12" }, [
-        _c("div", { staticClass: "my-3 m-lg-0" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "1",
-                  type: "checkbox",
-                  id: "monday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "monday" }
-                },
-                [_vm._v("Mon")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "2",
-                  type: "checkbox",
-                  id: "tuesday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "tuesday" }
-                },
-                [_vm._v("Tue")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "3",
-                  type: "checkbox",
-                  id: "wednesday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "wednesday" }
-                },
-                [_vm._v("Wed")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "4",
-                  type: "checkbox",
-                  id: "thursday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "thursday" }
-                },
-                [_vm._v("Thu")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "5",
-                  type: "checkbox",
-                  id: "friday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "friday" }
-                },
-                [_vm._v("Fri")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "6",
-                  type: "checkbox",
-                  id: "saturday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "saturday" }
-                },
-                [_vm._v("Sat")]
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass:
-                "custom-control custom-checkbox custom-control-inline"
-            },
-            [
-              _c("input", {
-                staticClass: "custom-control-input",
-                attrs: {
-                  name: "day[]",
-                  value: "7",
-                  type: "checkbox",
-                  id: "sunday"
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "custom-control-label",
-                  attrs: { for: "sunday" }
-                },
-                [_vm._v("Sun")]
-              )
-            ]
-          )
-        ])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true&":
-/*!************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true& ***!
-  \************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d& ***!
+  \************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -20855,46 +20792,82 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    [
+      _vm._l(_vm.event_dates, function(aMonths, sYears) {
+        return [
+          _vm._l(aMonths, function(aDates, iMonths) {
+            return [
+              _c("h4", [
+                _vm._v(
+                  _vm._s(_vm.getStringMonth(aDates[0])) +
+                    " " +
+                    _vm._s(sYears) +
+                    " "
+                )
+              ]),
+              _vm._v(" "),
+              _c("hr"),
+              _vm._v(" "),
+              _c(
+                "table",
+                { staticClass: "table table-hover" },
+                [
+                  _vm._m(0, true),
+                  _vm._v(" "),
+                  _vm._l(aDates, function(oDate) {
+                    return [
+                      _c("tbody", [
+                        _c("tr", [
+                          _c("th", { attrs: { scope: "row" } }, [
+                            _vm._v(
+                              _vm._s(oDate.getDate()) +
+                                " " +
+                                _vm._s(_vm.getStringDay(oDate.getDay()))
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            [
+                              _vm.event_day.includes(oDate.getDay())
+                                ? [
+                                    _vm._v(
+                                      "\n                                " +
+                                        _vm._s(_vm.event_name) +
+                                        "\n                            "
+                                    )
+                                  ]
+                                : _vm._e()
+                            ],
+                            2
+                          )
+                        ])
+                      ])
+                    ]
+                  })
+                ],
+                2
+              )
+            ]
+          })
+        ]
+      })
+    ],
+    2
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("h4", [_vm._v("Date: July xxxx")]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      _c("table", { staticClass: "table table-hover" }, [
-        _c("thead", [
-          _c("tr", [
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("Day")]),
-            _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("Event Name")])
-          ])
-        ]),
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Day")]),
         _vm._v(" "),
-        _c("tbody", [
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("1")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Mark")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("2")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Jacob")])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v("3")]),
-            _vm._v(" "),
-            _c("td", [_vm._v("Mark")])
-          ])
-        ])
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Event Name")])
       ])
     ])
   }
@@ -33178,7 +33151,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EventList.vue?vue&type=template&id=0c29787d&scoped=true& */ "./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true&");
+/* harmony import */ var _EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EventList.vue?vue&type=template&id=0c29787d& */ "./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&");
 /* harmony import */ var _EventList_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EventList.vue?vue&type=script&lang=js& */ "./resources/js/components/EventList.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
@@ -33190,11 +33163,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _EventList_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  "0c29787d",
+  null,
   null
   
 )
@@ -33220,19 +33193,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true&":
-/*!******************************************************************************************!*\
-  !*** ./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true& ***!
-  \******************************************************************************************/
+/***/ "./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/EventList.vue?vue&type=template&id=0c29787d& ***!
+  \******************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./EventList.vue?vue&type=template&id=0c29787d&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./EventList.vue?vue&type=template&id=0c29787d& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventList.vue?vue&type=template&id=0c29787d&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventList_vue_vue_type_template_id_0c29787d___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -33242,24 +33215,25 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./resources/js/event-maker/index.js ***!
   \*******************************************/
-/*! no exports provided */
+/*! exports provided: EventBus */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventBus", function() { return EventBus; });
 /* harmony import */ var _components_EventForm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/EventForm */ "./resources/js/components/EventForm.vue");
 /* harmony import */ var _components_EventList__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/EventList */ "./resources/js/components/EventList.vue");
 __webpack_require__(/*! ../bootstrap */ "./resources/js/bootstrap.js");
 
 
 
+var EventBus = new Vue();
 var app = new Vue({
   el: '#app',
   components: {
     EventForm: _components_EventForm__WEBPACK_IMPORTED_MODULE_0__["default"],
     EventList: _components_EventList__WEBPACK_IMPORTED_MODULE_1__["default"]
-  },
-  data: {}
+  }
 });
 
 /***/ }),
@@ -33330,6 +33304,25 @@ var HelperMixin = {
           }
         }, _callee, null, [[5, 11]]);
       }))();
+    },
+    getStringMonth: function getStringMonth(oDate) {
+      var LOCALE = 'default';
+      var OPTIONS = {
+        month: 'long'
+      };
+      return oDate.toLocaleString(LOCALE, OPTIONS);
+    },
+    getStringDay: function getStringDay(iDay) {
+      var oDays = {
+        0: 'Sun',
+        1: 'Mon',
+        2: 'Tue',
+        3: 'Wed',
+        4: 'Thu',
+        5: 'Fri',
+        6: 'Sat'
+      };
+      return oDays[iDay];
     }
   }
 };
