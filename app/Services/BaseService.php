@@ -11,5 +11,18 @@ use Illuminate\Http\Request;
  */
 class BaseService
 {
-    
+    /**
+     * Wrap array values to each key
+     * @param $aData array
+     * @param $sDesiredKey string
+     * @return array
+     */
+    public function wrapArrayValues(array $aData, string $sDesiredKey)
+    {
+        return collect($aData)->map(function ($mData) use ($sDesiredKey) {
+            return [
+                $sDesiredKey => $mData
+            ];
+        })->toArray();
+    }
 }

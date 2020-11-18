@@ -2,6 +2,7 @@
 export const HelperMixin = {
 
     methods: {
+
         /**
          * Api Request
          * Note: Prefixes are their respective data types.
@@ -9,13 +10,21 @@ export const HelperMixin = {
          * @param {object} oData
          * @param {string} sUrl
          */
-        async apiRequest(sMethod = 'GET', oData = {}, sUrl = '') {
+        async apiRequest(sMethod = 'GET', sUrl = '', oData = {}) {
+            const oHeaders = {
+                'Accept': 'application/json',
+            };
             const oRequestSettings = {
                 method: sMethod,
                 url: `api/${sUrl}`,
-                data: oData
+                data: oData,
+                headers: oHeaders
             };
-            return axios(oRequestSettings);
+            try {
+                return await axios(oRequestSettings);
+            } catch(error) {
+                return error.response;
+            }
         }
     }
     

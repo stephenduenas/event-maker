@@ -41,9 +41,9 @@ class EventDay extends Model
     ];
 
     /**
-     * Get the post that owns the comment.
+     * Get the event.
      */
-    public function post()
+    public function event()
     {
         return $this->belongsTo('App\Models\Event');
     }

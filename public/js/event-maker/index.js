@@ -1925,6 +1925,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_helper_mixin_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mixins/helper-mixin.js */ "./resources/js/mixins/helper-mixin.js");
 
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -2006,26 +2018,50 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var test;
+        var oFormData, oResult, oData, aEventDates;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                alert('submit!');
+                oFormData = new FormData(_this.$refs.eventForm);
                 _context.next = 3;
-                return _this.apiRequest('POST', {}, 'events/1');
+                return _this.apiRequest('POST', 'events/1', oFormData);
 
               case 3:
-                test = _context.sent;
-                console.log(test);
+                oResult = _context.sent;
+                oData = oResult.data;
+                aEventDates = _this.getAllInBetweenDates(oData.start_date, oData.end_date);
 
-              case 5:
+                _this.formatEventDates(aEventDates);
+
+              case 7:
               case "end":
                 return _context.stop();
             }
           }
         }, _callee);
       }))();
+    },
+    getAllInBetweenDates: function getAllInBetweenDates(sStartDate, sEndDate) {
+      var oDates = []; //to avoid modifying the original date
+
+      var oStartDate = new Date(sStartDate);
+      var oEndDate = new Date(sEndDate);
+
+      while (oStartDate <= oEndDate) {
+        oDates = [].concat(_toConsumableArray(oDates), [new Date(oStartDate)]);
+        oStartDate.setDate(oStartDate.getDate() + 1);
+      }
+
+      return oDates;
+    },
+    formatEventDates: function formatEventDates(aEventDates) {},
+    getStringMonth: function getStringMonth(oDate) {
+      var LOCALE = 'default';
+      var OPTIONS = {
+        month: 'long'
+      };
+      return oDate.toLocaleString(LOCALE, OPTIONS);
     }
   }
 });
@@ -20472,10 +20508,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true&":
-/*!************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true& ***!
-  \************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba& ***!
+  \************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -20490,6 +20526,7 @@ var render = function() {
   return _c(
     "form",
     {
+      ref: "eventForm",
       staticClass: "mb-5",
       attrs: {
         id: "contact-form",
@@ -20534,7 +20571,7 @@ var staticRenderFns = [
         _c("div", { staticClass: "md-form" }, [
           _c("input", {
             staticClass: "form-control",
-            attrs: { type: "text", id: "event_name" }
+            attrs: { name: "event_name", type: "text", id: "event_name" }
           }),
           _vm._v(" "),
           _c("label", { attrs: { for: "event_name" } }, [_vm._v("Event")])
@@ -20555,13 +20592,14 @@ var staticRenderFns = [
             _c("input", {
               staticClass: "form-control",
               attrs: {
+                name: "start_date",
                 placeholder: "Select date",
                 type: "date",
-                id: "initial_date"
+                id: "start_date"
               }
             }),
             _vm._v(" "),
-            _c("label", { attrs: { for: "initial_date" } }, [
+            _c("label", { attrs: { for: "start_date" } }, [
               _vm._v("Initial Date")
             ])
           ]
@@ -20576,15 +20614,14 @@ var staticRenderFns = [
             _c("input", {
               staticClass: "form-control",
               attrs: {
+                name: "end_date",
                 placeholder: "Select date",
                 type: "date",
-                id: "final_date"
+                id: "end_date"
               }
             }),
             _vm._v(" "),
-            _c("label", { attrs: { for: "final_date" } }, [
-              _vm._v("Final Date")
-            ])
+            _c("label", { attrs: { for: "end_date" } }, [_vm._v("Final Date")])
           ]
         )
       ])
@@ -20606,7 +20643,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "monday" }
+                attrs: {
+                  name: "day[]",
+                  value: "1",
+                  type: "checkbox",
+                  id: "monday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20629,7 +20671,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "tuesday" }
+                attrs: {
+                  name: "day[]",
+                  value: "2",
+                  type: "checkbox",
+                  id: "tuesday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20652,7 +20699,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "wednesday" }
+                attrs: {
+                  name: "day[]",
+                  value: "3",
+                  type: "checkbox",
+                  id: "wednesday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20675,7 +20727,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "thursday" }
+                attrs: {
+                  name: "day[]",
+                  value: "4",
+                  type: "checkbox",
+                  id: "thursday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20698,7 +20755,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "friday" }
+                attrs: {
+                  name: "day[]",
+                  value: "5",
+                  type: "checkbox",
+                  id: "friday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20721,7 +20783,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "saturday" }
+                attrs: {
+                  name: "day[]",
+                  value: "6",
+                  type: "checkbox",
+                  id: "saturday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -20744,7 +20811,12 @@ var staticRenderFns = [
             [
               _c("input", {
                 staticClass: "custom-control-input",
-                attrs: { type: "checkbox", id: "sunday" }
+                attrs: {
+                  name: "day[]",
+                  value: "7",
+                  type: "checkbox",
+                  id: "sunday"
+                }
               }),
               _vm._v(" "),
               _c(
@@ -33037,7 +33109,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true& */ "./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true&");
+/* harmony import */ var _EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EventForm.vue?vue&type=template&id=4f9f5cba& */ "./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&");
 /* harmony import */ var _EventForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EventForm.vue?vue&type=script&lang=js& */ "./resources/js/components/EventForm.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
@@ -33049,11 +33121,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _EventForm_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  "4f9f5cba",
+  null,
   null
   
 )
@@ -33079,19 +33151,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true&":
-/*!******************************************************************************************!*\
-  !*** ./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true& ***!
-  \******************************************************************************************/
+/***/ "./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba& ***!
+  \******************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./EventForm.vue?vue&type=template&id=4f9f5cba& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/EventForm.vue?vue&type=template&id=4f9f5cba&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EventForm_vue_vue_type_template_id_4f9f5cba___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -33222,27 +33294,41 @@ var HelperMixin = {
     apiRequest: function apiRequest() {
       var _arguments = arguments;
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var sMethod, oData, sUrl, oRequestSettings;
+        var sMethod, sUrl, oData, oHeaders, oRequestSettings;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 sMethod = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'GET';
-                oData = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : {};
-                sUrl = _arguments.length > 2 && _arguments[2] !== undefined ? _arguments[2] : '';
+                sUrl = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : '';
+                oData = _arguments.length > 2 && _arguments[2] !== undefined ? _arguments[2] : {};
+                oHeaders = {
+                  'Accept': 'application/json'
+                };
                 oRequestSettings = {
                   method: sMethod,
                   url: "api/".concat(sUrl),
-                  data: oData
+                  data: oData,
+                  headers: oHeaders
                 };
-                return _context.abrupt("return", axios(oRequestSettings));
+                _context.prev = 5;
+                _context.next = 8;
+                return axios(oRequestSettings);
 
-              case 5:
+              case 8:
+                return _context.abrupt("return", _context.sent);
+
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](5);
+                return _context.abrupt("return", _context.t0.response);
+
+              case 14:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, null, [[5, 11]]);
       }))();
     }
   }

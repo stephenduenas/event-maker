@@ -41,12 +41,18 @@ class Event extends Model
         'end_date',
     ];
 
-     /**
-     * Get the comments for the blog post.
+    /**
+     * Foreign Key
+     * @var string
      */
-    public function comments()
+    const FOREIGN_KEY = 'event_id';
+
+     /**
+     * Get the days for the events.
+     */
+    public function days()
     {
-        return $this->hasMany('App\Models\EventDay');
+        return $this->hasMany('App\Models\EventDay', self::FOREIGN_KEY);
     }
 
 }

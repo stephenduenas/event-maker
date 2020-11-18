@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\EventsService;
 
 /**
@@ -15,14 +14,23 @@ class EventsController extends Controller
 {
     private $oEventsService;
 
+    /**
+     * Constructor
+     * @param EventsService $oEventsService object
+     */
     public function __construct(EventsService $oEventsService)
     {
         $this->oEventsService = $oEventsService;
     }
 
-    public function create($sEventId)
+    /**
+     * Main Creatae
+     * @param $sEventId string
+     * @return json
+     */
+    public function create(string $sEventId)
     {
-        dump($this->oEventsService->create());
-        dd($sEventId);
+        $aResult = $this->oEventsService->create((int)$sEventId);
+        return response()->json($aResult);
     }
 }

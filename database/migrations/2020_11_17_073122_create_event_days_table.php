@@ -18,7 +18,7 @@ class CreateEventDaysTable extends Migration
             $table->foreignId('event_id')->comment('Foreign Key')->comment('Parent table => t_events');
             $table->unsignedTinyInteger('day')->nullable(false)->comment('1 = Monday | 2 = Tuesday | 3 = Wednesday | 4 = Thursday | 5 = Friday | 6 = Saturday | 7 = Sunday');
             $table->timestamps();
-            $table->foreign('event_id')->references('event_id')->on('t_events');
+            $table->foreign('event_id')->references('event_id')->on('t_events')->onDelete('cascade');
         });
     }
 
