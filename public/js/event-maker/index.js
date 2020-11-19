@@ -33528,7 +33528,7 @@ var HelperMixin = {
     apiRequest: function apiRequest() {
       var _arguments = arguments;
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var sMethod, sUrl, oData, oHeaders, oRequestSettings;
+        var sMethod, sUrl, oData, APPLICATION_JSON, oHeaders, oRequestSettings;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -33536,8 +33536,10 @@ var HelperMixin = {
                 sMethod = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'GET';
                 sUrl = _arguments.length > 1 && _arguments[1] !== undefined ? _arguments[1] : '';
                 oData = _arguments.length > 2 && _arguments[2] !== undefined ? _arguments[2] : {};
+                APPLICATION_JSON = 'application/json';
                 oHeaders = {
-                  'Accept': 'application/json'
+                  'Accept': APPLICATION_JSON,
+                  'Content-Type': APPLICATION_JSON
                 };
                 oRequestSettings = {
                   method: sMethod,
@@ -33545,24 +33547,24 @@ var HelperMixin = {
                   data: oData,
                   headers: oHeaders
                 };
-                _context.prev = 5;
-                _context.next = 8;
+                _context.prev = 6;
+                _context.next = 9;
                 return axios(oRequestSettings);
 
-              case 8:
+              case 9:
                 return _context.abrupt("return", _context.sent);
 
-              case 11:
-                _context.prev = 11;
-                _context.t0 = _context["catch"](5);
+              case 12:
+                _context.prev = 12;
+                _context.t0 = _context["catch"](6);
                 return _context.abrupt("return", _context.t0.response);
 
-              case 14:
+              case 15:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[5, 11]]);
+        }, _callee, null, [[6, 12]]);
       }))();
     },
 

@@ -10,8 +10,10 @@ export const HelperMixin = {
          * @param {string} sUrl
          */
         async apiRequest(sMethod = 'GET', sUrl = '', oData = {}) {
+            const APPLICATION_JSON = 'application/json'
             const oHeaders = {
-                'Accept': 'application/json',
+                'Accept': APPLICATION_JSON,
+                'Content-Type': APPLICATION_JSON
             };
             const oRequestSettings = {
                 method: sMethod,
@@ -25,7 +27,7 @@ export const HelperMixin = {
                 return error.response;
             }
         },
-        
+
         /**
          * Get String Month
          * @param {object} oDate 
