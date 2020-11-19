@@ -2059,6 +2059,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 mData = _context.sent;
 
                 if (mData !== false) {
+                  /**
+                   * @link resources\js\event-maker\index.js
+                   */
                   _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('renderAllEventDates', mData);
                 }
 
@@ -2072,7 +2075,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
 
     /**
-     * Post Event Settings Api
+     * Post event settings on back-end api
      * @param object FormData
      * @return mixed
      */
@@ -2081,31 +2084,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var oFormData, oResponse;
+        var oFormData, EVENT_ID, oResponse;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 oFormData = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : {};
-                _context2.next = 3;
-                return _this3.apiRequest('POST', 'events/1', oFormData);
 
-              case 3:
+                /**
+                 * Since event_id doesn't need to be dynamic
+                 */
+                EVENT_ID = 1;
+                _context2.next = 4;
+                return _this3.apiRequest('POST', "events/".concat(EVENT_ID), oFormData);
+
+              case 4:
                 oResponse = _context2.sent;
 
                 if (!(oResponse.status === 201)) {
-                  _context2.next = 7;
+                  _context2.next = 8;
                   break;
                 }
 
+                /**
+                 * @link resources\js\event-maker\index.js
+                 */
                 _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage');
                 return _context2.abrupt("return", oResponse.data);
 
-              case 7:
+              case 8:
                 _event_maker_index__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$emit('showAlertMessage', 'error');
                 return _context2.abrupt("return", false);
 
-              case 9:
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -2187,7 +2198,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2208,7 +2218,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     var _this = this;
 
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-      var oEventSettings;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -2220,19 +2229,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
                 _this.event_name = oEventSettings.event_name;
               });
-              _context.next = 3;
-              return _this.getEventSettingsApi();
 
-            case 3:
-              oEventSettings = _context.sent;
+              _this.renderEventDatesList();
 
-              if (oEventSettings !== null && oEventSettings.length !== 0) {
-                _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderAllEventDates', oEventSettings);
-                oEventSettings.days = _this.event_day;
-                _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderEventSettings', oEventSettings);
-              }
-
-            case 5:
+            case 2:
             case "end":
               return _context.stop();
           }
@@ -2241,38 +2241,86 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }))();
   },
   methods: {
-    getEventSettingsApi: function getEventSettingsApi() {
+    /**
+     * Render event dates list
+     */
+    renderEventDatesList: function renderEventDatesList() {
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var oResponse;
+        var oEventSettings;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _this2.apiRequest('GET', 'events/1');
+                return _this2.getEventSettingsApi();
 
               case 2:
-                oResponse = _context2.sent;
+                oEventSettings = _context2.sent;
 
-                if (!(oResponse.status !== 200)) {
-                  _context2.next = 6;
-                  break;
+                if (oEventSettings !== null && oEventSettings.length !== 0) {
+                  /**
+                   * @link resources\js\event-maker\index.js
+                   */
+                  _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderAllEventDates', oEventSettings);
+                  oEventSettings.days = _this2.event_day;
+                  /**
+                   * @link resources\js\components\EventForm.vue
+                   */
+
+                  _event_maker_index__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('renderEventSettings', oEventSettings);
                 }
 
-                alert(_this2.alert_message.get_api);
-                return _context2.abrupt("return", null);
-
-              case 6:
-                return _context2.abrupt("return", oResponse.data);
-
-              case 7:
+              case 4:
               case "end":
                 return _context2.stop();
             }
           }
         }, _callee2);
+      }))();
+    },
+
+    /**
+     * Get event settings from back-end api
+     * @return mixed
+     */
+    getEventSettingsApi: function getEventSettingsApi() {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var EVENT_ID, oResponse;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                /**
+                 * Since event_id doesn't need to be dynamic
+                 */
+                EVENT_ID = 1;
+                _context3.next = 3;
+                return _this3.apiRequest('GET', "events/".concat(EVENT_ID));
+
+              case 3:
+                oResponse = _context3.sent;
+
+                if (!(oResponse.status !== 200)) {
+                  _context3.next = 7;
+                  break;
+                }
+
+                alert(_this3.alert_message.get_api);
+                return _context3.abrupt("return", null);
+
+              case 7:
+                return _context3.abrupt("return", oResponse.data);
+
+              case 8:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
       }))();
     }
   }
@@ -20687,12 +20735,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card p-3" }, [
+  return _c("div", { staticClass: "card p-5" }, [
     _c(
       "form",
       {
         ref: "eventForm",
-        staticClass: "mb-5",
+        staticClass: "mb-4",
         attrs: {
           id: "contact-form",
           name: "contact-form",
@@ -20917,6 +20965,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
+    { staticClass: "mt-5 mt-lg-0" },
     [
       _vm._l(_vm.event_dates, function(aMonths, sYears) {
         return [

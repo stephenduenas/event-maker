@@ -31,8 +31,8 @@ class EventsRequest extends FormRequest
     {
         return [
             'event_name' => ['required', 'min:1', 'max:100'],
-            'start_date' => ['required', 'date'],
-            'end_date'   => ['required', 'date'],
+            'start_date' => ['required', 'date', 'before_or_equal:end_date'],
+            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
             'day.*'      => ['required', 'integer', 'min:0', 'max:6']
         ];
     }

@@ -32,6 +32,9 @@ var app = new Vue({
         renderAllEventDates(oEventSettings) {
             const aEventDates = this.getAllInBetweenDates(oEventSettings.start_date, oEventSettings.end_date);
             const oFormattedEventDates = this.formatEventDates(aEventDates);
+            /**
+             * @link resources\js\components\EventList.vue
+             */
             EventBus.$emit('getAllEventDates', oFormattedEventDates, oEventSettings);
         },
 

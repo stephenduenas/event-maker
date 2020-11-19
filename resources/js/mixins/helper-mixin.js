@@ -25,6 +25,7 @@ export const HelperMixin = {
                 return error.response;
             }
         },
+        
         /**
          * Get String Month
          * @param {object} oDate 
@@ -36,6 +37,7 @@ export const HelperMixin = {
             };
             return oDate.toLocaleString(LOCALE, OPTIONS);
         },
+
         /**
          * Get String Day
          * @param {int} iDay 

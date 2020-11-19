@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mt-5 mt-lg-0">
         <template v-for="(aMonths, sYears) in event_dates">
             <template v-for="(aDates, iMonths) in aMonths">
                 <h4>{{ getStringMonth(aDates[0]) }} {{ sYears }} </h4>
@@ -26,7 +26,6 @@
                 </table>
             </template>
         </template>
-        
     </div>
 </template>
 <script>
@@ -56,23 +55,44 @@ export default {
             });
             this.event_name = oEventSettings.event_name;
         });
-        const oEventSettings = await this.getEventSettingsApi();
-        if (oEventSettings !== null && oEventSettings.length !== 0) {
-            EventBus.$emit('renderAllEventDates', oEventSettings);
-            oEventSettings.days = this.event_day;
-            EventBus.$emit('renderEventSettings', oEventSettings);
-        }
-        
+        this.renderEventDatesList();
     },
     methods: {
+
+        /**
+         * Render event dates list
+         */
+        async renderEventDatesList() {
+            const oEventSettings = await this.getEventSettingsApi();
+            if (oEventSettings !== null && oEventSettings.length !== 0) {
+                /**
+                 * @link resources\js\event-maker\index.js
+                 */
+                EventBus.$emit('renderAllEventDates', oEventSettings);
+                oEventSettings.days = this.event_day;
+                /**
+                 * @link resources\js\components\EventForm.vue
+                 */
+                EventBus.$emit('renderEventSettings', oEventSettings);
+            }
+        },
+
+        /**
+         * Get event settings from back-end api
+         * @return mixed
+         */
         async getEventSettingsApi() {
-            const oResponse = await this.apiRequest('GET', 'events/1');
+            /**
+             * Since event_id doesn't need to be dynamic
+             */
+            const EVENT_ID = 1;
+            const oResponse = await this.apiRequest('GET', `events/${EVENT_ID}`);
             if (oResponse.status !== 200) {
                 alert(this.alert_message.get_api);
                 return null;
             }
             return oResponse.data
-        },
+        }
     }
 }
 

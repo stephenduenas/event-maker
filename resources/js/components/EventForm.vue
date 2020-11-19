@@ -1,6 +1,6 @@
 <template>
-    <div class="card p-3">
-        <form ref="eventForm" id="contact-form" class="mb-5" name="contact-form" action="api/events/1" method="GET">
+    <div class="card p-5">
+        <form ref="eventForm" id="contact-form" class="mb-4" name="contact-form" action="api/events/1" method="GET">
         <div class="form-row">
             <div class="col-md-12">
                 <div class="md-form">
@@ -109,24 +109,36 @@ export default {
             if (this.validateForm() === true) {
                 const mData = await this.sendEventSettingsApi(new FormData(this.$refs.eventForm));
                 if (mData !== false) {
+                    /**
+                     * @link resources\js\event-maker\index.js
+                     */
                     EventBus.$emit('renderAllEventDates', mData);
                 }
             }
         },
+
         /**
-         * Post Event Settings Api
+         * Post event settings on back-end api
          * @param object FormData
          * @return mixed
          */
         async sendEventSettingsApi(oFormData = {}) {
-            const oResponse = await this.apiRequest('POST', 'events/1', oFormData);
+            /**
+             * Since event_id doesn't need to be dynamic
+             */
+            const EVENT_ID = 1;
+            const oResponse = await this.apiRequest('POST', `events/${EVENT_ID}`, oFormData);
                 if (oResponse.status === 201) {
+                    /**
+                     * @link resources\js\event-maker\index.js
+                     */
                     EventBus.$emit('showAlertMessage');
                     return oResponse.data;
                 }
-                EventBus.$emit('showAlertMessage', 'error');
-                return false;
+            EventBus.$emit('showAlertMessage', 'error');
+            return false;
         },
+        
         /**
          * Validate Form
          * @returns bool

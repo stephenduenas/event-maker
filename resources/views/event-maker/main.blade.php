@@ -1,6 +1,5 @@
 @extends('layouts.app')
 
-
 @section('Page Title', 'Event Maker')
 
 @section('main')
