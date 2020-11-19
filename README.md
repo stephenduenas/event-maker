@@ -1,6 +1,6 @@
 # Event Maker Project
-### Project Link: http://134.209.96.220/ => Deployed using DigitalOcean (LEMP) Droplet
-
+## Project Link: http://134.209.96.220/ => Deployed using DigitalOcean (LEMP) Droplet
+<br><br><br><br><br>
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
